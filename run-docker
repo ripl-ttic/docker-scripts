@@ -1,0 +1,106 @@
+#!/bin/bash
+
+# Run docker in interactive mode and add a volume for the current (top-level)
+# semantic-planning directory
+
+# define constants and default values
+USERNAME=ripl
+CMD="/bin/bash"
+DAEMON_FLAG="-it"
+ATTACH_TO_DEPUTY=1
+PROJECT_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..
+ENABLE_USER_MAPPING=1
+
+# load project settings
+source $PROJECT_HOME/scripts/.load-project-settings.sh
+if [ $? -ne 0 ]; then
+  exit $?
+fi
+
+# define container and deputy name
+CONTAINER_NAME=$PROJECT_NAME
+DEPUTY_NAME="deputy-$PROJECT_NAME"
+
+# parse arguments
+CMD_ARGS=()
+while [ $# -gt 0 ]; do
+    arg=$1
+	CMD_ARGS+=("$arg")
+    shift
+    case $arg in
+        --name)
+			CONTAINER_NAME=$1
+			shift
+			CMD_ARGS=()
+        ;;
+        -d|--daemon)
+            DAEMON_FLAG="-d"
+			CMD_ARGS=()
+		;;
+        --new)
+            ATTACH_TO_DEPUTY=0
+			CMD_ARGS=()
+        ;;
+		--root)
+            ENABLE_USER_MAPPING=0
+			CMD_ARGS=()
+        ;;
+        --)
+			CMD_ARGS=()
+        ;;
+    esac
+done
+
+# update CMD if a new commands argument was passed
+if [ -n "$CMD_ARGS" ]; then
+    CMD="${CMD_ARGS[@]}"
+fi
+
+# check if there is another container with the same name
+docker inspect $CONTAINER_NAME &> /dev/null
+if [ $? -eq 0 ]; then
+	echo "Another container with the name '$CONTAINER_NAME' is present. Please, remove it first or use the flag '--name' to set a custom name."
+	echo "Exiting."
+	exit 21
+fi
+
+# check if there is a deputy running, if there is, attach to the existing container
+docker inspect -f {{.State.Running}} $DEPUTY_NAME &> /dev/null
+DEPUTY_EXISTS="$((1-$?))"
+if [ $DEPUTY_EXISTS -eq 1 ] && [ $ATTACH_TO_DEPUTY -eq 1 ]; then
+	echo "Deputy container found! Reusing environment"
+	# create user mapping instruction
+	USER_MAPPING_INSTR=""
+	if [ $ENABLE_USER_MAPPING -eq 1 ]; then
+		USER_MAPPING_INSTR="-u=$UID"
+	fi
+	# append to deputy
+	docker exec \
+		-it \
+		$USER_MAPPING_INSTR \
+		$DEPUTY_NAME $CMD
+else
+	if [ $ATTACH_TO_DEPUTY -eq 1 ]; then
+		echo "Deputy NOT found! Starting a new container"
+	fi
+	# create user mapping instruction
+	USER_MAPPING_INSTR=""
+	USER_HOME="/root"
+	if [ $ENABLE_USER_MAPPING -eq 1 ]; then
+		USER_MAPPING_INSTR="-e USER=$USERNAME:$UID"
+		USER_HOME="/home/$USERNAME-docker"
+	fi
+	# append to deputy
+	x-docker run \
+		--rm \
+		$DAEMON_FLAG \
+		--privileged \
+		-v $HOME/.docker_${PROJECT_NAME}_bash_history:$USER_HOME/.bash_history \
+		-v $PROJECT_HOME:/code:delegated \
+		-v $HOME/.ripl_ssh:$USER_HOME/.ssh \
+		--net="host" \
+		-e "MACHINE=base" \
+		$USER_MAPPING_INSTR \
+		--name $CONTAINER_NAME \
+		$DOCKER_IMAGE $CMD
+fi
