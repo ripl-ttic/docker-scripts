@@ -8,11 +8,12 @@ USERNAME=ripl
 CMD="/bin/bash"
 DAEMON_FLAG="-it"
 ATTACH_TO_DEPUTY=1
-PROJECT_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..
+PROJECT_SCRIPTS=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+PROJECT_HOME=$PROJECT_SCRIPTS/..
 ENABLE_USER_MAPPING=1
 
 # load project settings
-source $PROJECT_HOME/scripts/.load-project-settings.sh
+source $PROJECT_SCRIPTS/.load-project-settings.sh
 if [ $? -ne 0 ]; then
   exit $?
 fi
