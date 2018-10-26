@@ -11,4 +11,4 @@ if [ $? -ne 0 ]; then
 fi
 
 # launch docker container
-$RUN_DOCKER --name sheriff-$PROJECT_NAME bot-procman-sheriff /code/config/procman/semantic-planning.pmd
+$RUN_DOCKER --name sheriff-$PROJECT_NAME bot-procman-sheriff $PROCMAN_CONFIG
