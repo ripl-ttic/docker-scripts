@@ -2,7 +2,7 @@
 
 # define constants
 QUIET=0
-PROJECT_HOME=$( cd "$( dirname "$( readlink -f "${BASH_SOURCE[0]}" )" )" && pwd )/..
+PROJECT_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..
 
 # parse arguments
 CUR=0
