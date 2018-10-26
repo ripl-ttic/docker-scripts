@@ -8,8 +8,7 @@ USERNAME=ripl
 CMD="/bin/bash"
 DAEMON_FLAG="-it"
 ATTACH_TO_DEPUTY=1
-PROJECT_SCRIPTS=$( cd "$( dirname "$( readlink -f "${BASH_SOURCE[0]}" )" )" && pwd )
-
+PROJECT_SCRIPTS=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 PROJECT_HOME=$PROJECT_SCRIPTS/..
 ENABLE_USER_MAPPING=1
 
