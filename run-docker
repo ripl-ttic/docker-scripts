@@ -11,6 +11,7 @@ ATTACH_TO_DEPUTY=1
 PROJECT_SCRIPTS=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 PROJECT_HOME=$PROJECT_SCRIPTS/..
 ENABLE_USER_MAPPING=1
+ROS_MASTER_HOST="localhost"
 
 # load project settings
 source $PROJECT_SCRIPTS/.load-project-settings.sh
@@ -44,6 +45,11 @@ while [ $# -gt 0 ]; do
         ;;
 		--root)
             ENABLE_USER_MAPPING=0
+			CMD_ARGS=()
+        ;;
+		--ros-master-host)
+            ROS_MASTER_HOST=$1
+            shift
 			CMD_ARGS=()
         ;;
         --)
@@ -100,7 +106,7 @@ else
 		-v $PROJECT_HOME:/code:delegated \
 		-v $HOME/.ripl_ssh:$USER_HOME/.ssh \
 		--net="host" \
-		-e "MACHINE=base" \
+		-e "MACHINE=$ROS_MASTER_HOST" \
 		$USER_MAPPING_INSTR \
 		--name $CONTAINER_NAME \
 		$DOCKER_IMAGE $CMD
