@@ -106,7 +106,7 @@ else
 		-v $PROJECT_HOME:/code:delegated \
 		-v $HOME/.ripl_ssh:$USER_HOME/.ssh \
 		--net="host" \
-		-e "MACHINE=$ROS_MASTER_HOST" \
+		-e "ROS_MASTER_HOST=$ROS_MASTER_HOST" \
 		$USER_MAPPING_INSTR \
 		--name $CONTAINER_NAME \
 		$DOCKER_IMAGE $CMD
