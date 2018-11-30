@@ -1,0 +1,4 @@
+PROJECT_NAME=#name of the project
+DOCKER_IMAGE=#full name of the Docker image to run
+ROS_MASTER_HOST=#resolvable hostname of the machine running ROS Core
+PROCMAN_CONFIG=#path inside the container to the CFG file loaded by the sheriff
