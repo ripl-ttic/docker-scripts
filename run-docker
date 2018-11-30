@@ -129,7 +129,7 @@ else
     -v $PROJECT_SCRIPTS/assets/entrypoint.sh:/entrypoint.sh$BIND_MOUNT_OPTIONS \
     -v $PROJECT_SCRIPTS/assets/etc_sudoers:/etc/sudoers$BIND_MOUNT_OPTIONS \
     --net="host" \
-    -e "MACHINE=$ROS_MASTER_HOST" \
+    -e "ROS_MASTER_HOST=$ROS_MASTER_HOST" \
     $USER_MAPPING_INSTR \
     --name $CONTAINER_NAME \
     $DOCKER_IMAGE $CMD
