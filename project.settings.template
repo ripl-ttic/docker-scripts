@@ -1,4 +1,15 @@
-PROJECT_NAME=#name of the project
-DOCKER_IMAGE=#full name of the Docker image to run
-ROS_MASTER_HOST=#resolvable hostname of the machine running ROS Core
-PROCMAN_CONFIG=#path inside the container to the CFG file loaded by the sheriff
+#name of the project
+PROJECT_NAME=
+
+#full name of the Docker image to run
+DOCKER_IMAGE=
+
+#resolvable hostname of the machine running ROS Core
+ROS_MASTER_HOST=
+
+#path inside the container to the CFG file loaded by the sheriff
+PROCMAN_CONFIG=
+
+#(optional) custom LCM URL
+CUSTOM_LCM_IP=
+CUSTOM_LCM_TTL=

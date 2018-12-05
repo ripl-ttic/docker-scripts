@@ -18,6 +18,8 @@ ENABLE_USER_MAPPING=1
 ROS_MASTER_HOST="localhost"
 SYSTEM=-1
 BIND_MOUNT_OPTIONS=""
+LCM_IP_OPTION=""
+LCM_TTL_OPTION=""
 
 # get current system
 SYSTEM_CODENAME="$(uname -s)"
@@ -91,6 +93,14 @@ if [ $? -eq 0 ]; then
     exit 21
 fi
 
+# check if CUSTOM_LCM_IP, CUSTOM_LCM_TTL variables are set
+if [ -n "$CUSTOM_LCM_IP" ]; then
+	LCM_IP_OPTION="-e LCM_IP=$CUSTOM_LCM_IP"
+fi
+if [ -n "$CUSTOM_LCM_TTL" ]; then
+	LCM_TTL_OPTION="-e LCM_TTL=$CUSTOM_LCM_TTL"
+fi
+
 # check if there is a deputy running, if there is, attach to the existing container
 docker inspect -f {{.State.Running}} $DEPUTY_NAME &> /dev/null
 DEPUTY_EXISTS="$((1-$?))"
@@ -129,6 +139,8 @@ else
     -v $PROJECT_SCRIPTS/assets/entrypoint.sh:/entrypoint.sh$BIND_MOUNT_OPTIONS \
     -v $PROJECT_SCRIPTS/assets/etc_sudoers:/etc/sudoers$BIND_MOUNT_OPTIONS \
     --net="host" \
+    $LCM_IP_OPTION \
+    $LCM_TTL_OPTION \
     -e "ROS_MASTER_HOST=$ROS_MASTER_HOST" \
     $USER_MAPPING_INSTR \
     --name $CONTAINER_NAME \
