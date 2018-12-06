@@ -138,6 +138,8 @@ else
     -v $PROJECT_SCRIPTS/assets/environment.sh:/environment.sh$BIND_MOUNT_OPTIONS \
     -v $PROJECT_SCRIPTS/assets/entrypoint.sh:/entrypoint.sh$BIND_MOUNT_OPTIONS \
     -v $PROJECT_SCRIPTS/assets/etc_sudoers:/etc/sudoers$BIND_MOUNT_OPTIONS \
+    -v /etc/timezone:/etc/timezone:ro \
+    -v /etc/localtime:/etc/localtime:ro \
     --net="host" \
     $LCM_IP_OPTION \
     $LCM_TTL_OPTION \
