@@ -3,6 +3,7 @@
 # define constants
 PROJECT_SCRIPTS=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 RUN_DOCKER=$PROJECT_SCRIPTS/run-docker
+RANGER_OPTION=""
 
 # load project settings
 source $PROJECT_SCRIPTS/.load-project-settings.sh --quiet
@@ -10,5 +11,10 @@ if [ $? -ne 0 ]; then
   exit $?
 fi
 
+# spawn ranger deputy (if needed)
+if [ -n "$RANGER_MODE" ]; then
+	RANGER_OPTION="--lone-ranger"
+fi
+
 # launch docker container
-$RUN_DOCKER --name sheriff-$PROJECT_NAME bot-procman-sheriff $PROCMAN_CONFIG
+$RUN_DOCKER --name sheriff-$PROJECT_NAME bot-procman-sheriff $RANGER_OPTION $PROCMAN_CONFIG

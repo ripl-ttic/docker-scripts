@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Run docker in interactive mode and add a volume for the current (top-level)
-# semantic-planning directory
-
 # constants
 SYS_LINUX=0
 SYS_MAC=1
