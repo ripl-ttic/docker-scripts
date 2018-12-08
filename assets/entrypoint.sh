@@ -26,6 +26,9 @@ else
     fi
     # add user to dialout group
     usermod -a -G dialout "$USERNAME"
+    # let the user run sudo without password
+    echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/sudo_no_password
+    chmod 0440 /etc/sudoers.d/sudo_no_password
     # source env
     echo "source /environment.sh" >> /home/$USERNAME/.bashrc
     chown -R $USERNAME:$USERNAME /home/$USERNAME
