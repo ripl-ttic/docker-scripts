@@ -2,7 +2,7 @@
 
 # define constants
 QUIET=0
-DOCKER_SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..
+DOCKER_SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 PROJECT_HOME=$DOCKER_SCRIPTS_DIR/..
 MACHINE_ROLE='ROLE-NOT-SET'
 
