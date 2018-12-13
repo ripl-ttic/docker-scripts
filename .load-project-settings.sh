@@ -2,7 +2,9 @@
 
 # define constants
 QUIET=0
-PROJECT_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..
+DOCKER_SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..
+PROJECT_HOME=$DOCKER_SCRIPTS_DIR/..
+MACHINE_ROLE='ROLE-NOT-SET'
 
 # parse arguments
 CUR=0
@@ -19,8 +21,8 @@ done
 
 # load project settings file if it exists
 if [ ! -f $PROJECT_HOME/project.settings ]; then
-    echo "File 'project.settings' not found in the main directory of your project ($PROJECT_HOME)."
-	echo "Create one before launching this script. Exiting..."
+  echo "File 'project.settings' not found in the main directory of your project ($PROJECT_HOME)."
+	echo "Create one before launching this script. A template is available in '$DOCKER_SCRIPTS_DIR/project.settings.template'. Exiting..."
 	exit 2
 fi
 source $PROJECT_HOME/project.settings
@@ -39,7 +41,16 @@ if [ -z "$DOCKER_IMAGE" ]; then
 	exit 4
 fi
 
+# load machine settings file if it exists
+if [ ! -f $PROJECT_HOME/machine.settings ]; then
+  echo "WARNING: File 'machine.settings' not found in the main directory of your project ($PROJECT_HOME)."
+  echo "Create one before launching this script. A template is available in '$DOCKER_SCRIPTS_DIR/machine.settings.template'. Exiting..."
+	exit 5
+fi
+source $PROJECT_HOME/machine.settings
+
 # print out info about the project
 if [ $QUIET -eq 0 ]; then
     echo "Project: $PROJECT_NAME"
+    echo "  - Role: $MACHINE_ROLE"
 fi

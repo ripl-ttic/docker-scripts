@@ -11,4 +11,4 @@ if [ $? -ne 0 ]; then
 fi
 
 # launch docker container
-$RUN_DOCKER --name deputy-$PROJECT_NAME --daemon "bot-procman-deputy --name $PROJECT_NAME-$HOSTNAME"
+$RUN_DOCKER --name deputy-$PROJECT_NAME --daemon "bot-procman-deputy --name $PROJECT_NAME-$MACHINE_ROLE"
