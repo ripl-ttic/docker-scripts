@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo $LCM_IP
-
 # source ROS
 source /opt/ros/$ROS_DISTRO/setup.bash
 
