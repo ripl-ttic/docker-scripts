@@ -112,7 +112,7 @@ if [ $DEPUTY_EXISTS -eq 1 ] && [ $ATTACH_TO_DEPUTY -eq 1 ]; then
     docker exec \
     -it \
     $USER_MAPPING_INSTR \
-    $DEPUTY_NAME $CMD
+    $DEPUTY_NAME /entrypoint.sh $CMD
 else
     if [ $ATTACH_TO_DEPUTY -eq 1 ]; then
         echo "Deputy NOT found! Starting a new container"

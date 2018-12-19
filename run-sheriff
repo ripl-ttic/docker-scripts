@@ -17,4 +17,4 @@ if [ -n "$RANGER_MODE" ]; then
 fi
 
 # launch docker container
-$RUN_DOCKER --name sheriff-$PROJECT_NAME bot-procman-sheriff $RANGER_OPTION $PROCMAN_CONFIG
+$RUN_DOCKER --name sheriff-$PROJECT_NAME "bot-procman-sheriff $RANGER_OPTION $PROCMAN_CONFIG"
