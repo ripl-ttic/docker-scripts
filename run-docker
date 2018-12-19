@@ -15,6 +15,7 @@ ENABLE_USER_MAPPING=1
 ROS_MASTER_HOST="localhost"
 SYSTEM=-1
 BIND_MOUNT_OPTIONS=""
+SHARE_TIME=1
 LCM_IP_OPTION=""
 LCM_TTL_OPTION=""
 
@@ -25,6 +26,7 @@ case "${SYSTEM_CODENAME}" in
     SYSTEM=$SYS_LINUX
     ;;
     Darwin*) # Mac OSX
+    SHARE_TIME=0
     BIND_MOUNT_OPTIONS=":delegated"
     SYSTEM=$SYS_MAC
     ;;
@@ -124,6 +126,12 @@ else
         USER_MAPPING_INSTR="-e USER=$USERNAME:$UID"
         USER_HOME="/home/$USERNAME-docker"
     fi
+    # share time (Linux only)
+    SHARE_TIME_OPTION=""
+    if [ $SHARE_TIME -eq 1 ]; then
+        SHARE_TIME_OPTION="-v /etc/timezone:/etc/timezone:ro"
+        SHARE_TIME_OPTION="$SHARE_TIME_OPTION -v /etc/localtime:/etc/localtime:ro"
+    fi
     # append to deputy
     x-docker run \
     --rm \
@@ -135,8 +143,7 @@ else
     -v $PROJECT_SCRIPTS/assets/environment.sh:/environment.sh$BIND_MOUNT_OPTIONS \
     -v $PROJECT_SCRIPTS/assets/entrypoint.sh:/entrypoint.sh$BIND_MOUNT_OPTIONS \
     -v $PROJECT_SCRIPTS/assets/etc_sudoers:/etc/sudoers$BIND_MOUNT_OPTIONS \
-    -v /etc/timezone:/etc/timezone:ro \
-    -v /etc/localtime:/etc/localtime:ro \
+    $SHARE_TIME_OPTION \
     --net="host" \
     $LCM_IP_OPTION \
     $LCM_TTL_OPTION \
