@@ -142,7 +142,7 @@ else
     -v $HOME/.ripl_ssh:$USER_HOME/.ssh$BIND_MOUNT_OPTIONS \
     -v $PROJECT_SCRIPTS/assets/environment.sh:/environment.sh$BIND_MOUNT_OPTIONS \
     -v $PROJECT_SCRIPTS/assets/entrypoint.sh:/entrypoint.sh$BIND_MOUNT_OPTIONS \
-    -v $PROJECT_SCRIPTS/assets/etc_sudoers:/etc/sudoers$BIND_MOUNT_OPTIONS \
+    -v $PROJECT_SCRIPTS/assets/etc_sudoers:/etc/sudoers_ext$BIND_MOUNT_OPTIONS \
     $SHARE_TIME_OPTION \
     --net="host" \
     $LCM_IP_OPTION \
