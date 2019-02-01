@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# check dependencies
+declare -a DEPENDENCIES=("sudo" "chown")
+
+## now loop through the above array
+for dep in "${DEPENDENCIES[@]}"
+do
+   which "$dep" >/dev/null 2>&1
+   if [ $? -ne 0 ] ; then
+       # the dependency `$dep` is not sarisfied
+       echo ""
+       echo "FATAL: The command '$dep' is necessary and was not found in your docker container."
+       echo "Please, install it before using 'docker-scripts'. Exiting...\n"
+       echo ""
+       exit
+   fi
+done
+
 source /environment.sh
 
 EXEC_AS="root"
@@ -32,6 +49,7 @@ else
         # add user to dialout group
         usermod -a -G dialout "$USERNAME"
         # let the user run sudo without password
+        mkdir -p /etc/sudoers.d
         echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/sudo_no_password
         chmod 0440 /etc/sudoers.d/sudo_no_password
         # source env
@@ -46,7 +64,7 @@ fi
 echo "-------------------------------------------"
 
 if [ $# -gt 0 ]; then
-    sudo PYTHONPATH=$PYTHONPATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH -u $EXEC_AS -H -E bash -c "$*"
+    sudo PATH=$PATH PYTHONPATH=$PYTHONPATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH -u $EXEC_AS -H -E bash -c "$*"
 else
-    sudo PYTHONPATH=$PYTHONPATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH -u $EXEC_AS -H -E bash
+    sudo PATH=$PATH PYTHONPATH=$PYTHONPATH LD_LIBRARY_PATH=$LD_LIBRARY_PATH -u $EXEC_AS -H -E bash
 fi

@@ -137,6 +137,7 @@ else
     --rm \
     $DAEMON_FLAG \
     --privileged \
+    --entrypoint /entrypoint.sh \
     -v $HOME/.docker_${PROJECT_NAME}_bash_history:$USER_HOME/.bash_history$BIND_MOUNT_OPTIONS \
     -v $PROJECT_HOME:/code$BIND_MOUNT_OPTIONS \
     -v $HOME/.ripl_ssh:$USER_HOME/.ssh$BIND_MOUNT_OPTIONS \

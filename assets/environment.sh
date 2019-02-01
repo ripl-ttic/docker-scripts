@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# source ROS
-source /opt/ros/$ROS_DISTRO/setup.bash
+# source ROS (if ROS is found)
+if [ -n "$ROS_DISTRO" ]; then
+    source /opt/ros/$ROS_DISTRO/setup.bash
+fi
 
 # configure ROS URL
 export ROS_MASTER_URI="http://$ROS_MASTER_HOST:11311"
