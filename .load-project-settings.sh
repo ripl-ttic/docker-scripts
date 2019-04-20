@@ -6,8 +6,10 @@ DOCKER_SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 PROJECT_HOME=$DOCKER_SCRIPTS_DIR/..
 
 # define default values
-ROS_MASTER_HOST='localhost'
-MACHINE_ROLE='default'
+ROS_MASTER_HOST="localhost"
+MACHINE_ROLE="default"
+LCM_IP_OPTION=""
+LCM_TTL_OPTION=""
 
 # parse arguments
 CUR=0
