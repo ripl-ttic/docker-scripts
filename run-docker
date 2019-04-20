@@ -40,6 +40,15 @@ if [ $? -ne 0 ]; then
     exit $?
 fi
 
+# make sure that the Docker image exists
+if [[ "$(docker images -q $DOCKER_IMAGE 2> /dev/null)" == "" ]]; then
+  # the image does not exist
+  echo "The Docker image '$DOCKER_IMAGE' was not found."
+  echo "Please, make sure you built it or pulled it from a registry."
+  echo "Exiting."
+  exit 22
+fi
+
 # define container and deputy name
 CONTAINER_NAME=$PROJECT_NAME
 DEPUTY_NAME="deputy-$PROJECT_NAME"
