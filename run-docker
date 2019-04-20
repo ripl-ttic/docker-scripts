@@ -6,7 +6,8 @@ SYS_MAC=1
 
 # define constants and default values
 USERNAME=ripl
-CMD="/bin/bash"
+PROJECT_SHELL="/bin/bash"
+PROJECT_CMD=$PROJECT_SHELL
 DAEMON_FLAG="-it"
 ATTACH_TO_DEPUTY=1
 PROJECT_SCRIPTS=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -20,22 +21,22 @@ CUSTOM_SETUP_FILE_OPTION=""
 # get current system
 SYSTEM_CODENAME="$(uname -s)"
 case "${SYSTEM_CODENAME}" in
-    Linux*)  # Linux
+  Linux*)  # Linux
     SYSTEM=$SYS_LINUX
-    ;;
-    Darwin*) # Mac OSX
+  ;;
+  Darwin*) # Mac OSX
     SHARE_TIME=0
     BIND_MOUNT_OPTIONS=":delegated"
     SYSTEM=$SYS_MAC
-    ;;
-    *)       # System not supported
+  ;;
+  *)       # System not supported
     echo "[WARNING] : System '${SYSTEM_CODENAME}' not officially supported."
 esac
 
 # load project settings
 source $PROJECT_SCRIPTS/.load-project-settings.sh
 if [ $? -ne 0 ]; then
-    exit $?
+  exit $?
 fi
 
 # make sure that the Docker image exists
@@ -54,49 +55,49 @@ DEPUTY_NAME="deputy-$PROJECT_NAME"
 # parse arguments
 CMD_ARGS=()
 while [ $# -gt 0 ]; do
-    arg=$1
-    CMD_ARGS+=("$arg")
-    shift
-    case $arg in
-        --name)
-        CONTAINER_NAME=$1
-        shift
-        CMD_ARGS=()
-        ;;
-        -d|--daemon)
-        DAEMON_FLAG="-d"
-        CMD_ARGS=()
-        ;;
-        --new)
-        ATTACH_TO_DEPUTY=0
-        CMD_ARGS=()
-        ;;
-        --root)
-        ENABLE_USER_MAPPING=0
-        CMD_ARGS=()
-        ;;
-        --ros-master-host)
-        ROS_MASTER_HOST=$1
-        shift
-        CMD_ARGS=()
-        ;;
-        --)
-        CMD_ARGS=()
-        ;;
-    esac
+  arg=$1
+  CMD_ARGS+=("$arg")
+  shift
+  case $arg in
+    --name)
+      CONTAINER_NAME=$1
+      shift
+      CMD_ARGS=()
+    ;;
+    -d|--daemon)
+      DAEMON_FLAG="-d"
+      CMD_ARGS=()
+    ;;
+    --new)
+      ATTACH_TO_DEPUTY=0
+      CMD_ARGS=()
+    ;;
+    --root)
+      ENABLE_USER_MAPPING=0
+      CMD_ARGS=()
+    ;;
+    --ros-master-host)
+      ROS_MASTER_HOST=$1
+      shift
+      CMD_ARGS=()
+    ;;
+    --)
+      CMD_ARGS=()
+    ;;
+  esac
 done
 
 # update CMD if a new commands argument was passed
 if [ -n "$CMD_ARGS" ]; then
-    CMD="${CMD_ARGS[@]}"
+  PROJECT_CMD="${CMD_ARGS[@]}"
 fi
 
 # check if there is another container with the same name
 docker inspect $CONTAINER_NAME &> /dev/null
 if [ $? -eq 0 ]; then
-    echo "Another container with the name '$CONTAINER_NAME' is present. Please, remove it first or use the flag '--name' to set a custom name."
-    echo "Exiting."
-    exit 21
+  echo "Another container with the name '$CONTAINER_NAME' is present. Please, remove it first or use the flag '--name' to set a custom name."
+  echo "Exiting."
+  exit 21
 fi
 
 # check if CUSTOM_LCM_IP, CUSTOM_LCM_TTL variables are set
@@ -116,36 +117,36 @@ fi
 docker inspect -f {{.State.Running}} $DEPUTY_NAME &> /dev/null
 DEPUTY_EXISTS="$((1-$?))"
 if [ $DEPUTY_EXISTS -eq 1 ] && [ $ATTACH_TO_DEPUTY -eq 1 ]; then
-    echo "Deputy container found! Reusing environment"
-    # create user mapping instruction
-    USER_MAPPING_INSTR=""
-    if [ $ENABLE_USER_MAPPING -eq 1 ]; then
-        USER_MAPPING_INSTR="-u=$UID"
-    fi
-    # append to deputy
-    docker exec \
-    -it \
-    $USER_MAPPING_INSTR \
-    $DEPUTY_NAME /entrypoint.sh $CMD
+  echo "Deputy container found! Reusing environment"
+  # create user mapping instruction
+  USER_MAPPING_INSTR=""
+  if [ $ENABLE_USER_MAPPING -eq 1 ]; then
+    USER_MAPPING_INSTR="-u=$UID"
+  fi
+  # append to deputy
+  docker exec \
+  -it \
+  $USER_MAPPING_INSTR \
+  $DEPUTY_NAME /entrypoint.sh $PROJECT_SHELL
 else
-    if [ $ATTACH_TO_DEPUTY -eq 1 ]; then
-        echo "Deputy NOT found! Starting a new container"
-    fi
-    # create user mapping instruction
-    USER_MAPPING_INSTR=""
-    USER_HOME="/root"
-    if [ $ENABLE_USER_MAPPING -eq 1 ]; then
-        USER_MAPPING_INSTR="-e USER=$USERNAME:$UID"
-        USER_HOME="/home/$USERNAME-docker"
-    fi
-    # share time (Linux only)
-    SHARE_TIME_OPTION=""
-    if [ $SHARE_TIME -eq 1 ]; then
-        SHARE_TIME_OPTION="-v /etc/timezone:/etc/timezone:ro"
-        SHARE_TIME_OPTION="$SHARE_TIME_OPTION -v /etc/localtime:/etc/localtime:ro"
-    fi
-    # append to deputy
-    x-docker run \
+  if [ $ATTACH_TO_DEPUTY -eq 1 ]; then
+    echo "Deputy NOT found! Starting a new container"
+  fi
+  # create user mapping instruction
+  USER_MAPPING_INSTR=""
+  USER_HOME="/root"
+  if [ $ENABLE_USER_MAPPING -eq 1 ]; then
+    USER_MAPPING_INSTR="-e USER=$USERNAME:$UID"
+    USER_HOME="/home/$USERNAME-docker"
+  fi
+  # share time (Linux only)
+  SHARE_TIME_OPTION=""
+  if [ $SHARE_TIME -eq 1 ]; then
+    SHARE_TIME_OPTION="-v /etc/timezone:/etc/timezone:ro"
+    SHARE_TIME_OPTION="$SHARE_TIME_OPTION -v /etc/localtime:/etc/localtime:ro"
+  fi
+  # append to deputy
+  x-docker run \
     --rm \
     $DAEMON_FLAG \
     --privileged \
@@ -164,5 +165,5 @@ else
     -e "ROS_MASTER_HOST=$ROS_MASTER_HOST" \
     $USER_MAPPING_INSTR \
     --name $CONTAINER_NAME \
-    $DOCKER_IMAGE $CMD
+    $DOCKER_IMAGE $PROJECT_CMD
 fi
