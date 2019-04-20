@@ -53,7 +53,7 @@ else
         echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/sudo_no_password
         chmod 0440 /etc/sudoers.d/sudo_no_password
         # source env
-        echo "source /environment.sh" >> /home/$USERNAME/.bashrc
+        echo "source /environment.sh >/dev/null 2>&1" >> /home/$USERNAME/.bashrc
         chown -R $USERNAME:$USERNAME /home/$USERNAME
         echo "Now running as $USERNAME."
     fi

@@ -18,6 +18,7 @@ BIND_MOUNT_OPTIONS=""
 SHARE_TIME=1
 LCM_IP_OPTION=""
 LCM_TTL_OPTION=""
+CUSTOM_SETUP_FILE_OPTION=""
 
 # get current system
 SYSTEM_CODENAME="$(uname -s)"
@@ -109,6 +110,11 @@ if [ -n "$CUSTOM_LCM_TTL" ]; then
 	LCM_TTL_OPTION="-e LCM_TTL=$CUSTOM_LCM_TTL"
 fi
 
+# check if a custom setup file is set
+if [ -n "$CUSTOM_SETUP_FILE" ]; then
+  CUSTOM_SETUP_FILE_OPTION="-e CUSTOM_SETUP_FILE=$CUSTOM_SETUP_FILE"
+fi
+
 # check if there is a deputy running, if there is, attach to the existing container
 docker inspect -f {{.State.Running}} $DEPUTY_NAME &> /dev/null
 DEPUTY_EXISTS="$((1-$?))"
@@ -157,6 +163,7 @@ else
     --net="host" \
     $LCM_IP_OPTION \
     $LCM_TTL_OPTION \
+    $CUSTOM_SETUP_FILE_OPTION \
     -e "ROS_MASTER_HOST=$ROS_MASTER_HOST" \
     $USER_MAPPING_INSTR \
     --name $CONTAINER_NAME \
